@@ -18,7 +18,7 @@ def get_all_coin_ids() -> List[str]:
     return [coin["id"] for coin in coins]
 
 
-def get_supported_vs_currencies():
+def get_supported_vs_currencies() -> List[str]:
     return json.loads(requests.get("https://api.coingecko.com/api/v3/simple/supported_vs_currencies").text)
 
 
