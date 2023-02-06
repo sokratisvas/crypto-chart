@@ -2,27 +2,41 @@ import requests
 import json
 import datetime
 import matplotlib.pyplot as plt
+from typing import List, Dict
 
 
-def get_all_coins() -> None:
-    list_of_coins_url = "https://api.coingecko.com/api/v3/coins/list"
-    json_list_of_coins_url = requests.get(list_of_coins_url)
-    coins = json.loads(json_list_of_coins_url.text)
-
-    with open("coins.json", "w") as f:
-        f.write(json.dumps(coins, indent=4))
+def pprint(data_struct) -> None:
+    print(json.dumps(data_struct, indent=4))
 
 
-def get_coin_data(coin_id) -> None:
-    coin_data_url = f"https://api.coingecko.com/api/v3/coins/{coin_id}"
-    json_coin_data = requests.get(coin_data_url)
-    coin_data = json.loads(json_coin_data.text)
-
-    with open("{coin_id}-data.json", "w") as f:
-        f.write(json.dumps(coin_data, indent=4))
+def get_all_coins() -> List[Dict[str, str]]:
+    return json.loads(requests.get("https://api.coingecko.com/api/v3/coins/list").text)
 
 
-def get_coin_data_range(coin_id: str, vs_currency: str, num_of_days: str) -> None:
+def get_all_coin_ids() -> List[str]:
+    coins = get_all_coins()
+    return [coin["id"] for coin in coins]
+
+
+def get_supported_vs_currencies():
+    return json.loads(requests.get("https://api.coingecko.com/api/v3/simple/supported_vs_currencies").text)
+
+
+def get_coin_id(coin_name: str, available_coins: List[Dict[str, str]]) -> str:
+    return next(coin for coin in available_coins if coin["name"] == coin_name)["id"]
+
+
+def get_coin_symbol(coin_name: str, available_coins: List[Dict[str, str]]) -> str:
+    return next(coin for coin in available_coins if coin["name"] == coin_name)["symbol"]
+
+
+def plot_coin_chart(coin_id: str, vs_currency: str, num_of_days: str) -> None:
+    if vs_currency not in get_supported_vs_currencies():
+        raise ValueError(f"error: {vs_currency} is not a supported vs currency.")
+
+    if coin_id not in get_all_coin_ids():
+        raise ValueError(f"error: {coin_id} is not a supported coin id.")
+
     coin_data_url = f"https://api.coingecko.com/api/v3/coins/{coin_id}/market_chart/?vs_currency={vs_currency}&days={num_of_days}"
     json_coin_data = requests.get(coin_data_url)
     coin_data = json.loads(json_coin_data.text)
@@ -32,10 +46,6 @@ def get_coin_data_range(coin_id: str, vs_currency: str, num_of_days: str) -> Non
         for stamp in coin_data["prices"]
     ]
     coin_value = [stamp[1] for stamp in coin_data["prices"]]
-    print(max(coin_value))
-
-    with open(f"{coin_id}-upto-{num_of_days}-days.json", "w") as f:
-        f.write(json.dumps(coin_data, indent=4))
 
     plt.plot(date_stamps, coin_value)
     plt.title(f"{coin_id} vs {vs_currency}")
@@ -46,6 +56,13 @@ def get_coin_data_range(coin_id: str, vs_currency: str, num_of_days: str) -> Non
     plt.show()
 
 
+def main() -> None:
+    coins = get_all_coins()
+    coin_name = "Bitcoin"
+    vs_currency_id = "usd"
+    num_of_days = 10
+    plot_coin_chart(get_coin_id(coin_name, coins), vs_currency_id, num_of_days)
+    
+
 if __name__ == "__main__":
-    get_all_coins()
-    get_coin_data_range("ethereum", "usd", 10)
+    main()
