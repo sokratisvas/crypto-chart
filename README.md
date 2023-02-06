@@ -11,3 +11,6 @@ $ pip3 install requirements.txt
 ``` bash 
 $ python3 crypto_data.py   
 ```
+# Example
+BTC vs USD chart over the last 10 days:
+![BTC vs USD chart](charts/btc_vs_usd.png)
