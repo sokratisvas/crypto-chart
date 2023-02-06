@@ -13,9 +13,9 @@ def get_all_coins() -> List[Dict[str, str]]:
     return json.loads(requests.get("https://api.coingecko.com/api/v3/coins/list").text)
 
 
-def get_all_coin_ids() -> List[str]:
+def get_all_coin_names() -> List[str]:
     coins = get_all_coins()
-    return [coin["id"] for coin in coins]
+    return [coin["name"] for coin in coins]
 
 
 def get_supported_vs_currencies() -> List[str]:
@@ -32,10 +32,9 @@ def get_coin_symbol(coin_name: str, available_coins: List[Dict[str, str]]) -> st
 
 def plot_coin_chart(coin_id: str, vs_currency: str, num_of_days: str) -> None:
     if vs_currency not in get_supported_vs_currencies():
+        with open("supported_vs_currencies.json", "w") as f:
+            f.write(json.dumps(get_supported_vs_currencies(), indent=4))
         raise ValueError(f"error: {vs_currency} is not a supported vs currency.")
-
-    if coin_id not in get_all_coin_ids():
-        raise ValueError(f"error: {coin_id} is not a supported coin id.")
 
     coin_data_url = f"https://api.coingecko.com/api/v3/coins/{coin_id}/market_chart/?vs_currency={vs_currency}&days={num_of_days}"
     json_coin_data = requests.get(coin_data_url)
