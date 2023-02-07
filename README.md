@@ -14,3 +14,9 @@ $ python3 crypto_data.py
 # Example
 BTC vs USD chart over the last 10 days:
 ![BTC vs USD chart](charts/btc_vs_usd.png)
+
+BTC vs ETH chart over the last 10 days:
+![BTC vs ETH chart](charts/btc_vs_eth.png)
+
+SOL vs USD chart over the last 10 days:
+![SOL vs USD chart](charts/sol_vs_usd.png)
