@@ -4,7 +4,7 @@ Create custom Cryptocurrency charts via the [CoinGecko API](https://www.coingeck
 # Dependencies
 Install all dependencies with:
 ```bash
-$ pip3 install requirements.txt
+$ pip3 install -r requirements.txt
 ```
 
 # Quick Start
